@@ -2,44 +2,24 @@
 
 - hosts: all
   strategy: free
-  roles:
-    - docker_stack
-
-  environment:
-    DOCKER_STACK: "{{ docker_stack }}"
-    DOCKER_REGISTRY: "{{ docker_registry }}"
-    DOCKER_REGISTRY_USER: "{{ docker_registry_user }}"
-    DOCKER_REGISTRY_PASSWORD: "{{ docker_registry_password }}"
 
   tasks:
 
+
     - name: "Ensuring existence of configuration directory: {{ app_data }}"
-      command: mkdir -p {{ app_data }}
-      args:
-        warn: no
-      become: yes
-      become_user: "{{ user }}"
+      file:
+        state: directory
+        path: '{{ app_data }}'
 
-    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
+    - name: "Rendering docker-compose.yaml file"
       template:
-        src: "{{ source }}"
-        dest: "{{ app_data }}/{{ out }}"
-      become: yes
-      become_user: "{{ user }}"
-      vars:
-        source: .htpasswd.j2
-        out: .htpasswd
-
-    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
-      template:
-        src: "{{ source }}"
-        dest: "{{ app_data }}/{{ out }}"
-      become: yes
-      become_user: "{{ user }}"
-      vars:
-        source: traefik.toml.j2
-        out: traefik.toml
-
-    - include_role:
-        name: docker_stack
-        tasks_from: deploy
+        src: "docker-compose.yaml.j2"
+        dest: "{{ app_data }}/docker-compose.yaml"
+      
+    - name: "Running `Docker stack deploy`"
+      shell: >
+        docker stack deploy 
+        --with-registry-auth 
+        --prune 
+        -c {{ app_data }}/docker-compose.yaml 
+        {{ docker_stack }}
