@@ -46,7 +46,6 @@ services:
         - "traefik.http.routers.traefik.rule=Host(`{{ domains | join(',') }}`)"
         - "traefik.http.routers.traefik.entrypoints=websecure"
         - "traefik.http.routers.traefik.tls.certresolver=letsencryptresolver"
-        - "traefik.http.routers.traefik.tls.domains=dev.diesel.net"
 
         - "traefik.http.routers.traefik.service=api@internal"
         - "traefik.http.routers.traefik.middlewares=traefik-auth"
