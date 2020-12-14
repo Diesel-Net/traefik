@@ -1,0 +1,45 @@
+# ansible-playbook deploy.yaml -i inventories/dev/hosts --vault-id ~/.tokens/master_id
+
+- hosts: all
+  strategy: free
+  roles:
+    - docker_stack
+
+  environment:
+    DOCKER_STACK: "{{ docker_stack }}"
+    DOCKER_REGISTRY: "{{ docker_registry }}"
+    DOCKER_REGISTRY_USER: "{{ docker_registry_user }}"
+    DOCKER_REGISTRY_PASSWORD: "{{ docker_registry_password }}"
+
+  tasks:
+
+    - name: "Ensuring existence of configuration directory: {{ app_data }}"
+      command: mkdir -p {{ app_data }}
+      args:
+        warn: no
+      become: yes
+      become_user: "{{ user }}"
+
+    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
+      template:
+        src: "{{ source }}"
+        dest: "{{ app_data }}/{{ out }}"
+      become: yes
+      become_user: "{{ user }}"
+      vars:
+        source: .htpasswd.j2
+        out: .htpasswd
+
+    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
+      template:
+        src: "{{ source }}"
+        dest: "{{ app_data }}/{{ out }}"
+      become: yes
+      become_user: "{{ user }}"
+      vars:
+        source: traefik.toml.j2
+        out: traefik.toml
+
+    - include_role:
+        name: docker_stack
+        tasks_from: deploy

@@ -1,0 +1,4 @@
+- name: docker_stack
+  scm: git
+  src: "git@github.com:tomdaley92/ansible-role-docker-stack.git"
+  version: "stable"

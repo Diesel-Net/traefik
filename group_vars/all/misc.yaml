@@ -1,0 +1,5 @@
+user: automation
+home: "/home/{{ user }}"
+
+codename: proxy
+app_data: "{{ home }}/.diesel/{{ codename }}"

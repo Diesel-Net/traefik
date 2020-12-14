@@ -1,0 +1,59 @@
+# docker-compose.yaml
+
+version: '3.7'
+services: 
+
+
+  server:
+    image: "traefik:v1.7"
+    volumes:
+      - "{{ unix_localtime }}:{{ unix_localtime }}"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/ssl/certs/:/etc/ssl/certs/
+    ports:
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    configs:
+      - source: server_config
+        target: /traefik.toml
+    secrets:
+      - source: server_htpasswd
+        target: /run/secrets/htpasswd
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+      labels:
+        - traefik.enable=true
+        - traefik.frontend.rule=Host:{{ domains | join(',') }};PathPrefixStrip:/traefik
+        - traefik.frontend.priority=20
+        - traefik.port=8080
+        - traefik.docker.network={{ docker_network }}
+    networks:
+      - {{ docker_network }}
+
+
+configs:
+  server_config:
+    file: {{ app_data }}/traefik.toml 
+    name: ${DOCKER_STACK}_server_config_${HASH_SERVER_CONFIG}
+
+
+secrets:
+  server_htpasswd:
+    file: {{ app_data }}/.htpasswd 
+    name: ${DOCKER_STACK}_server_htpasswd_${HASH_SERVER_HTPASSWD}
+
+
+networks:
+  {{ docker_network }}:
+    external:
+      name: {{ docker_network }}
