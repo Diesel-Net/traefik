@@ -6,6 +6,5 @@ Sets up Traefik on our clusters for each environment. This is where all of our T
 
 ## Deploy to Docker Swarm
 ```bash
-export ENV=dev
-ansible-playbook deploy.yaml -i inventories/$ENV/hosts --vault-id ~/.tokens/master_id
+ansible-playbook deploy.yaml -i inventories/dev/hosts --vault-id ~/.tokens/master_id
 ```
