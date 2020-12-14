@@ -36,20 +36,36 @@ services:
       # Enable dashboard
       - "--api.dashboard=true"
     deploy:
+      restart_policy:
+        condition: any
       placement:
         constraints:
           - node.role == manager
       labels:
 
-        - "traefik.enable=true"
-        - "traefik.http.services.traefik.loadbalancer.server.port=888" # required by swarm but not used.
-        - "traefik.http.routers.traefik.rule=Host(`{{ domains | join(',') }}`)"
-        - "traefik.http.routers.traefik.entrypoints=websecure"
-        - "traefik.http.routers.traefik.tls.certresolver=letsencryptresolver"
+        - traefik.enable=true
+        - traefik.http.services.traefik.loadbalancer.server.port=888 # required by swarm but not used.
+        - traefik.http.routers.traefik.rule=Host(`{{ domains | join(',') }}`)
+        - traefik.http.routers.traefik.entrypoints=websecure
+        - traefik.http.routers.traefik.tls.certresolver=letsencryptresolver
 
-        - "traefik.http.routers.traefik.service=api@internal"
-        - "traefik.http.routers.traefik.middlewares=traefik-auth"
-        - "traefik.http.middlewares.traefik-auth.basicauth.users={{ htpasswd }}"
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.middlewares=traefik-auth
+        - traefik.http.middlewares.traefik-auth.basicauth.users={{ htpasswd }}
+    networks:
+      - {{ docker_network }}
+
+  hello:
+    image: nginxdemos/hello
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.hello.loadbalancer.server.port=80
+        - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/hello`)
+        - traefik.http.middlewares.hello.stripprefix.prefixes=/hello"
+        - traefik.http.routers.hello.entrypoints=websecure
+        - traefik.http.routers.hello.tls.certresolver=letsencryptresolver
+        
     networks:
       - {{ docker_network }}
 
