@@ -9,7 +9,7 @@ services:
     volumes:
       - "{{ unix_localtime }}:{{ unix_localtime }}"
       - /var/run/docker.sock:/var/run/docker.sock
-      - "{{ app_data }}/server/certs:/etc/ssl/certs/"
+      - /etc/ssl/certs/:/etc/ssl/certs/
     ports:
       - target: 443
         published: 443
@@ -22,9 +22,9 @@ services:
     configs:
       - source: server_config
         target: /traefik.toml
-    # secrets:
-    #   - source: server_htpasswd
-    #     target: /run/secrets/htpasswd
+    secrets:
+      - source: server_htpasswd
+        target: /run/secrets/htpasswd
     deploy:
       placement:
         constraints:
@@ -33,7 +33,7 @@ services:
         condition: any
       labels:
         - traefik.enable=true
-        - traefik.frontend.rule=Host:{{ cnames | join(',') }};PathPrefixStrip:/traefik
+        - traefik.frontend.rule=Host:{{ domains | join(',') }};PathPrefixStrip:/traefik
         - traefik.frontend.priority=20
         - traefik.port=8080
         - traefik.docker.network={{ docker_network }}
@@ -43,14 +43,14 @@ services:
 
 configs:
   server_config:
-    file: {{ app_data }}/server/traefik.toml 
+    file: {{ app_data }}/traefik.toml 
     name: ${DOCKER_STACK}_server_config_${HASH_SERVER_CONFIG}
 
 
-# secrets:
-#   server_htpasswd:
-#     file: {{ app_data }}/server/.htpasswd 
-#     name: ${DOCKER_STACK}_server_htpasswd_${HASH_SERVER_HTPASSWD}
+secrets:
+  server_htpasswd:
+    file: {{ app_data }}/.htpasswd 
+    name: ${DOCKER_STACK}_server_htpasswd_${HASH_SERVER_HTPASSWD}
 
 
 networks:

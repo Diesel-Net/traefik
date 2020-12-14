@@ -1,7 +1,0 @@
-
-certs:
-  - common_name: diesel.net
-      cert: |
-        test
-      key: |
-        test

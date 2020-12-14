@@ -13,62 +13,30 @@
 
   tasks:
 
-    - name: "Ensuring existence of configuration directory: {{ app_data }}/{{ docker_service }}"
-      command: mkdir -p {{ app_data }}/{{ docker_service }}
+    - name: "Ensuring existence of configuration directory: {{ app_data }}"
+      command: mkdir -p {{ app_data }}
       args:
         warn: no
       become: yes
       become_user: "{{ user }}"
-      vars:
-        docker_service: server/certs
 
-    - name: "Rendering public certificates..."
+    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
       template:
         src: "{{ source }}"
-        dest: "{{ app_data }}/{{ docker_service }}/{{ out }}"
-      become: yes
-      become_user: "{{ user }}"
-      with_items: "{{ certs }}"
-      loop_control:
-        label: "{{ out }}"
-      vars:
-        docker_service: server/certs
-        source: tls.cert.j2
-        out: "{{ item.common_name }}.cert"
-
-    - name: "Rendering private keys..."
-      template:
-        src: "{{ source }}"
-        dest: "{{ app_data }}/{{ docker_service }}/{{ out }}"
-      become: yes
-      become_user: "{{ user }}"
-      with_items: "{{ certs }}"
-      loop_control:
-        label: "{{ out }}"
-      vars:
-        docker_service: server/certs
-        source: tls.key.j2
-        out: "{{ item.common_name }}.key"
-
-    - name: "Rendering {{ source }} to {{ app_data }}/{{ docker_service }}/{{ out }}"
-      template:
-        src: "{{ source }}"
-        dest: "{{ app_data }}/{{ docker_service }}/{{ out }}"
+        dest: "{{ app_data }}/{{ out }}"
       become: yes
       become_user: "{{ user }}"
       vars:
-        docker_service: server
         source: .htpasswd.j2
         out: .htpasswd
 
-    - name: "Rendering {{ source }} to {{ app_data }}/{{ docker_service }}/{{ out }}"
+    - name: "Rendering {{ source }} to {{ app_data }}/{{ out }}"
       template:
         src: "{{ source }}"
-        dest: "{{ app_data }}/{{ docker_service }}/{{ out }}"
+        dest: "{{ app_data }}/{{ out }}"
       become: yes
       become_user: "{{ user }}"
       vars:
-        docker_service: server
         source: traefik.toml.j2
         out: traefik.toml
 

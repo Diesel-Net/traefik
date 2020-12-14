@@ -1,6 +1,1 @@
-env: "prod"
-debug: "false"
-cnames: 
-  - "diesel.net"
-  - "tools.diesel.net"
-  - "hooks.diesel.net"
+env: prod

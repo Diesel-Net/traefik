@@ -1,5 +1,1 @@
-env: "dev"
-debug: "true"
-cnames: 
-  - "dev.diesel.net"
-  
+env: dev

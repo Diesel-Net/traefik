@@ -1,7 +1,0 @@
-certs:
-
-  - common_name: dev.diesel.net
-    cert: |
-      test
-    key: |
-      test
