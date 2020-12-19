@@ -43,7 +43,8 @@ services:
         constraints:
           - node.role == manager
       labels:
-        # Expose dashboard
+        # Expose dashboard at: /dashboard/ 
+        # note: trailing slash must be included
         - traefik.enable=true
         - traefik.http.services.traefik.loadbalancer.server.port=888
         - traefik.http.routers.traefik.tls.certresolver=diesel-net
