@@ -17,7 +17,6 @@ services:
       # Logging
       - "--log.level=INFO"
       - "--accesslog"
-
       # Docker swarm configuration
       - "--providers.docker.endpoint=unix:///var/run/docker.sock"
       - "--providers.docker.swarmMode=true"
