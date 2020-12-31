@@ -63,10 +63,9 @@ services:
         - traefik.enable=true
         - traefik.http.services.hello.loadbalancer.server.port=80
         - traefik.http.routers.hello.tls.certresolver=diesel-net
+        - traefik.http.routers.hello.priority=1
         - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) #&& PathPrefix(`/hello`)
-        #- traefik.http.middlewares.hello.stripprefix.prefixes=/hello"
-        
-        
+        #- traefik.http.middlewares.hello.stripprefix.prefixes=/hello"  
     networks:
       - {{ docker_network }}
 
