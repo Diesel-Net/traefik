@@ -1,5 +1,5 @@
 [tools]
 tools.diesel.net   
 
-[hooks]
-hooks.diesel.net
+[drone]
+drone.diesel.net
