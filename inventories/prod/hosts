@@ -1,5 +1,11 @@
-[tools]
-tools.diesel.net   
-
-[drone]
-drone.diesel.net
+all:
+  children:
+    tools:
+      hosts:
+        tools.diesel.net
+    drone:
+      hosts:
+        drone.diesel.net
+  vars:
+    ansible_user: automation
+    ansible_python_interpreter: /usr/bin/python3
