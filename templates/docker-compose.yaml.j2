@@ -34,6 +34,9 @@ services:
       # Global HTTP -> HTTPS
       - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      # Send `X-Forwarded-*` headers to backends
+      - "--entryPoints.web.forwardedHeaders.insecure"
+      - "--entryPoints.websecure.forwardedHeaders.insecure"
       # Enable dashboard
       - "--api.dashboard=true"
     deploy:
@@ -63,9 +66,8 @@ services:
         - traefik.enable=true
         - traefik.http.services.hello.loadbalancer.server.port=80
         - traefik.http.routers.hello.tls.certresolver=diesel-net
-        - traefik.http.routers.hello.priority=1
-        - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) #&& PathPrefix(`/hello`)
-        #- traefik.http.middlewares.hello.stripprefix.prefixes=/hello"  
+        - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/hello`)
+        - traefik.http.middlewares.hello.stripprefix.prefixes=/hello" 
     networks:
       - {{ docker_network }}
 
