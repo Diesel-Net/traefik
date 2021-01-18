@@ -1,0 +1,11 @@
+# traefik.yaml
+# https://doc.traefik.io/traefik/reference/dynamic-configuration/file/
+
+tls:
+  certificates: {% if certs is not defined %}[]{% endif %}
+{% if certs is defined %}
+  {% for item in certs %}
+    - certFile: '/etc/traefik/certs/{{ item.common_name }}.cert'
+      keyFile: '/etc/traefik/certs/{{ item.common_name }}.key'
+  {% endfor %}
+{% endif %}
