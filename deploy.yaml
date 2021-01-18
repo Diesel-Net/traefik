@@ -5,18 +5,44 @@
 
   tasks:
 
+    - name: 'Ensure existence of configuration directory: {{ app_data }}/certs'
+      command: mkdir -p {{ app_data }}/certs
+      args:
+        warn: no
+      become: yes
+      become_user: "{{ user }}"
 
-    - name: "Ensuring existence of configuration directory: {{ app_data }}"
-      file:
-        state: directory
-        path: '{{ app_data }}'
+    - name: Render public certificates
+      ansible.builtin.copy:
+        content: '{{ item.cert }}'
+        dest: '{{ app_data }}/certs/{{ item.common_name }}.cert'
+      with_items: '{{ certs }}'
+      loop_control:
+        label: "{{ item.common_name }}.cert"
+      when: certs is defined
 
-    - name: "Rendering docker-compose.yaml file"
+    - name: Render private keys
+      ansible.builtin.copy:
+        content: '{{ item.key }}'
+        dest: '{{ app_data }}/certs/{{ item.common_name }}.key'
+      with_items: '{{ certs }}'
+      loop_control:
+        label: "{{ item.common_name }}.key"
+      when: certs is defined
+
+    - name: 'Render dynamic configuration to {{ app_data }}/{{ out }}'
+      template:
+        src: traefik.yaml.j2
+        dest: "{{ app_data }}/traefik.yaml"
+      become: yes
+      become_user: "{{ user }}"
+
+    - name: Render docker-compose.yaml file
       template:
         src: "docker-compose.yaml.j2"
         dest: "{{ app_data }}/docker-compose.yaml"
-      
-    - name: "Running `Docker stack deploy`"
+
+    - name: Execute `Docker stack deploy`
       shell: >
         docker stack deploy 
         --with-registry-auth 
