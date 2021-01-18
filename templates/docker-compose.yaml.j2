@@ -52,12 +52,19 @@ services:
       #- '--entryPoints.web.forwardedHeaders.insecure'
       #- '--entryPoints.websecure.forwardedHeaders.insecure'
 
-      # Cert resolver (ACME configuration)
-      - '--certificatesresolvers.diesel-net.acme.httpchallenge=true'
-      - '--certificatesresolvers.diesel-net.acme.httpchallenge.entrypoint=web'
-      - '--certificatesresolvers.diesel-net.acme.email={{ acme_email }}'
-      - '--certificatesresolvers.diesel-net.acme.storage=acme.json'
-      - '--certificatesresolvers.diesel-net.acme.caServer={{ acme_url }}'
+      # Public cert resolver (Let's Encrypt)
+      - '--certificatesresolvers.lets-encrypt.acme.httpchallenge=true'
+      - '--certificatesresolvers.lets-encrypt.acme.httpchallenge.entrypoint=web'
+      - '--certificatesresolvers.lets-encrypt.acme.email={{ acme_email }}'
+      - '--certificatesresolvers.lets-encrypt.acme.storage=acme.json'
+      - '--certificatesresolvers.lets-encrypt.acme.caServer={{ acme_url_external }}'
+
+      # Private cert resolver (Step CA)
+      - '--certificatesresolvers.step-ca.acme.httpchallenge=true'
+      - '--certificatesresolvers.step-ca.acme.httpchallenge.entrypoint=web'
+      - '--certificatesresolvers.step-ca.acme.email={{ acme_email }}'
+      - '--certificatesresolvers.step-ca.acme.storage=acme.json'
+      - '--certificatesresolvers.step-ca.acme.caServer={{ acme_url_internal }}'
       
     deploy:
       restart_policy:
@@ -74,11 +81,11 @@ services:
         # I do not understand why this would be required..
         # Maybe it is the EGRESS port number?
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
-        - traefik.http.routers.dashboard.tls.certresolver=diesel-net
+        - traefik.http.routers.dashboard.tls.certresolver=step-ca
         #- traefik.http.routers.dashboard.service=api@internal
         
         # router rules must be defined within a single docker label
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join(',') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
         
         # middlewares
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
@@ -93,7 +100,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.http.services.hello.loadbalancer.server.port=80
-        - traefik.http.routers.hello.tls.certresolver=diesel-net
+        - traefik.http.routers.hello.tls.certresolver=step-ca
         - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/hello`)
         - traefik.http.middlewares.hello.stripprefix.prefixes=/hello
     networks:

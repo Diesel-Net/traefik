@@ -30,7 +30,7 @@
         label: "{{ item.common_name }}.key"
       when: certs is defined
 
-    - name: 'Render dynamic configuration to {{ app_data }}/{{ out }}'
+    - name: 'Render dynamic configuration to {{ app_data }}/traefik.yaml'
       template:
         src: traefik.yaml.j2
         dest: "{{ app_data }}/traefik.yaml"

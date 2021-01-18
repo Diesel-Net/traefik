@@ -1,5 +1,5 @@
 user: automation
 home: "/home/{{ user }}"
 
-codename: proxy
+codename: traefik
 app_data: "{{ home }}/.diesel/{{ codename }}"
