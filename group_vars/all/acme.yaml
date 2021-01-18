@@ -7,4 +7,7 @@ acme_email: !vault |
   63643134353934313762633261333761346361353565353630326531393630656336
 
 # private step-ca instance
-acme_url: https://ca.diesel.net/acme/acme/directory
+acme_url_internal: https://ca.diesel.net/acme/acme/directory
+
+# production let's encrypt v2
+acme_url_external: https://acme-v02.api.letsencrypt.org/directory
