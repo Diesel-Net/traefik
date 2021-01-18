@@ -1,8 +1,8 @@
-# proxy
-Sets up Traefik on our clusters for each environment. This is where all of our TLS certificates are stored.
+# traefik
+Sets up Traefik v2 on our clusters for each environment. This is where all of our TLS certificates are stored.
 
 ## Requirements
-- Ansible 2.8.1+
+- Ansible 2.10+
 
 ## Deploy to Docker Swarm
 ```bash
