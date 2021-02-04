@@ -22,9 +22,6 @@ services:
       # Enable dashboard
       - '--api=true'
       - '--api.dashboard=true'
-
-      # Traefik Pilot registration (centralized view)
-      - --pilot.token={{ traefik_pilot_token }}
       
       # Docker swarm configuration
       - '--providers.docker=true'
@@ -87,7 +84,7 @@ services:
         - traefik.http.routers.dashboard.tls.certresolver=step-ca
         
         # router rules must be defined within a single docker label
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join(',') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
         
         # basic-auth middleware
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
@@ -109,7 +106,7 @@ services:
         - traefik.enable=true
         - traefik.http.services.hello.loadbalancer.server.port=80
         - traefik.http.routers.hello.tls.certresolver=step-ca
-        - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/hello`)
+        - traefik.http.routers.hello.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/hello`)
         - traefik.http.middlewares.hello.stripprefix.prefixes=/hello
         - traefik.http.middlewares.hello.stripprefix.forceSlash=true
         - traefik.http.routers.hello.middlewares=hello@docker
