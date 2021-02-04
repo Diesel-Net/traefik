@@ -1,6 +1,7 @@
 env: prod
 
 domains: 
+  - diesel.net
   - prod.diesel.net
 
 traefik_pilot_token: !vault |
