@@ -1,4 +1,4 @@
-[![Build Status](https://drone-ci.hopto.org/api/badges/tomdaley92/traefik/status.svg?ref=refs/heads/stable)](https://drone-ci.hopto.org/tomdaley92/traefik)
+[![Build Status](https://drone-ci.hopto.org/api/badges/Diesel-Net/traefik/status.svg)](https://drone-ci.hopto.org/Diesel-Net/traefik)
 
 # traefik
 Sets up Traefik v2 on our clusters for each environment. This is where all of our TLS certificates are stored.
