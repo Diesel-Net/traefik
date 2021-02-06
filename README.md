@@ -1,7 +1,7 @@
 [![Build Status](https://drone-ci.hopto.org/api/badges/Diesel-Net/traefik/status.svg)](https://drone-ci.hopto.org/Diesel-Net/traefik)
 
 # traefik
-Sets up Traefik v2 on our clusters for each environment. This is where all of our TLS certificates are stored.
+Sets up [Traefik v2.4](https://doc.traefik.io/traefik)] on our clusters for each environment. This is where all of our TLS certificates are stored.
 
 ## Requirements
 - Ansible 2.10+
