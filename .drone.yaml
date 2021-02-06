@@ -1,13 +1,13 @@
 ---
 kind: pipeline
 type: docker
-name: deploy development
+name: development pipeline
 
 clone:
   depth: 1
 
 steps:
-  - name: Build and Deploy
+  - name: deploy
     image: plugins/ansible:3
     settings:
       playbook: deploy.yaml
@@ -26,13 +26,13 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: deploy certification
+name: certification pipeline
 
 clone:
   depth: 1
 
 steps:
-  - name: Build and Deploy
+  - name: deploy
     image: plugins/ansible:3
     settings:
       playbook: deploy.yaml
@@ -51,13 +51,13 @@ trigger:
 ---
 kind: pipeline
 type: docker
-name: deploy production
+name: production pipeline
 
 clone:
   depth: 1
 
 steps:
-  - name: Build and Deploy
+  - name: deploy
     image: plugins/ansible:3
     settings:
       playbook: deploy.yaml
