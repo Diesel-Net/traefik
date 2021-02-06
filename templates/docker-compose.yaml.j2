@@ -4,13 +4,12 @@ version: '3.7'
 services: 
 
 
-  server:
-    image: traefik:v2.3
+  main:
+    image: traefik:v2.4
     volumes:
       - /etc/localtime:/etc/localtime
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/ssl/certs/:/etc/ssl/certs/
-      - '{{ app_data }}/certs:/etc/traefik/certs/'
       - '{{ app_data }}/traefik.yaml:/etc/traefik/dynamic/traefik.yaml:ro'
     ports:
       - 80:80
@@ -23,7 +22,7 @@ services:
       # Enable dashboard
       - '--api=true'
       - '--api.dashboard=true'
-
+      
       # Docker swarm configuration
       - '--providers.docker=true'
       - '--providers.docker.endpoint=unix:///var/run/docker.sock'
@@ -36,18 +35,18 @@ services:
       - '--providers.file=true'
       - '--providers.file.directory=/etc/traefik/dynamic'
       - '--providers.file.watch=true'
-
-      # Configure entrypoint
+      
+      # Configure entrypoints
       - '--entrypoints.web.address=:80'
       - '--entrypoints.websecure.address=:443'
 
       # needed to enable TLS, unless a cert-resolver (ACME) is used
       - '--entrypoints.websecure.http.tls=true'
 
-      # Global HTTP -> HTTPS
+      # Global HTTP -> HTTPS redirect
       - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
       - '--entrypoints.web.http.redirections.entryPoint.scheme=https'
-      
+
       # Send `X-Forwarded-*` headers to backends
       #- '--entryPoints.web.forwardedHeaders.insecure'
       #- '--entryPoints.websecure.forwardedHeaders.insecure'
@@ -66,31 +65,37 @@ services:
       - '--certificatesresolvers.step-ca.acme.storage=acme.json'
       - '--certificatesresolvers.step-ca.acme.caServer={{ acme_url_internal }}'
       
+
     deploy:
-      restart_policy:
-        condition: any
       placement:
         constraints:
           - node.role == manager
+      restart_policy:
+        condition: any
       labels:
-        # Expose dashboard at: /dashboard/ 
-        # note: trailing slash must be included
         - traefik.enable=true
 
         # required in swarm, but can be any port number. 
         # I do not understand why this would be required..
         # Maybe it is the EGRESS port number?
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
-        - traefik.http.routers.dashboard.tls.certresolver=step-ca
         #- traefik.http.routers.dashboard.service=api@internal
+
+        - traefik.http.routers.dashboard.tls.certresolver=step-ca
         
         # router rules must be defined within a single docker label
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join(',') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
         
-        # middlewares
+        # basic-auth middleware
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
-        - traefik.http.routers.dashboard.middlewares=dashboard-auth
+        
+        # trailing slash middleware
+        - traefik.http.middlewares.dashboard-add-slash.redirectregex.regex=(^.*\/dashboard$$)
+        - traefik.http.middlewares.dashboard-add-slash.redirectregex.replacement=$$1/
+        - traefik.http.middlewares.dashboard-add-slash.redirectregex.permanent=false
 
+        # assign middlewares (order matters)
+        - traefik.http.routers.dashboard.middlewares=dashboard-add-slash@docker, dashboard-auth@docker
     networks:
       - {{ docker_network }}
 
@@ -101,8 +106,10 @@ services:
         - traefik.enable=true
         - traefik.http.services.hello.loadbalancer.server.port=80
         - traefik.http.routers.hello.tls.certresolver=step-ca
-        - traefik.http.routers.hello.rule=Host(`{{ domains | join(',') }}`) && PathPrefix(`/hello`)
+        - traefik.http.routers.hello.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/hello`)
         - traefik.http.middlewares.hello.stripprefix.prefixes=/hello
+        - traefik.http.middlewares.hello.stripprefix.forceSlash=true
+        - traefik.http.routers.hello.middlewares=hello@docker
     networks:
       - {{ docker_network }}
 
