@@ -16,7 +16,7 @@ services:
       - 443:443
     command:
       # Logging
-      - '--log.level=DEBUG'
+      - '--log.level=INFO'
       - '--accesslog=true'
 
       # Enable dashboard
@@ -47,10 +47,6 @@ services:
       - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
       - '--entrypoints.web.http.redirections.entryPoint.scheme=https'
 
-      # Send `X-Forwarded-*` headers to backends
-      #- '--entryPoints.web.forwardedHeaders.insecure'
-      #- '--entryPoints.websecure.forwardedHeaders.insecure'
-
       # Public cert resolver (Let's Encrypt)
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge=true'
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge.entrypoint=web'
@@ -75,9 +71,7 @@ services:
       labels:
         - traefik.enable=true
 
-        # required in swarm, but can be any port number. 
-        # I do not understand why this would be required..
-        # Maybe it is the EGRESS port number?
+        # required in swarm
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
         #- traefik.http.routers.dashboard.service=api@internal
 
@@ -108,7 +102,6 @@ services:
         - traefik.http.routers.hello.tls.certresolver=step-ca
         - traefik.http.routers.hello.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/hello`)
         - traefik.http.middlewares.hello.stripprefix.prefixes=/hello
-        - traefik.http.middlewares.hello.stripprefix.forceSlash=true
         - traefik.http.routers.hello.middlewares=hello@docker
     networks:
       - {{ docker_network }}
