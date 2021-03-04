@@ -6,6 +6,10 @@ all:
     tools:
       hosts:
         tools.diesel.net
+    valheim:
+      hosts:
+        valheim.diesel.net
+
   vars:
     ansible_user: automation
     ansible_python_interpreter: /usr/bin/python3
