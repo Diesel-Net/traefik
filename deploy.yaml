@@ -5,17 +5,13 @@
 
   tasks:
 
-    - name: 'Ensure existence of configuration directory: {{ app_data }}/certs'
-      command: mkdir -p {{ app_data }}/certs
-      args:
-        warn: no
-      become: yes
-      become_user: "{{ user }}"
+    - name: 'Ensure existence of configuration directory: {{ directories_files }}/certs'
+      command: mkdir -p {{ directories_files }}/certs
 
     - name: Render public certificates
       ansible.builtin.copy:
         content: '{{ item.cert }}'
-        dest: '{{ app_data }}/certs/{{ item.common_name }}.cert'
+        dest: '{{ directories_files }}/certs/{{ item.common_name }}.cert'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.cert"
@@ -24,7 +20,7 @@
     - name: Render private keys
       ansible.builtin.copy:
         content: '{{ item.key }}'
-        dest: '{{ app_data }}/certs/{{ item.common_name }}.key'
+        dest: '{{ directories_files }}/certs/{{ item.common_name }}.key'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.key"
@@ -33,7 +29,7 @@
     - name: 'Render dynamic configuration to {{ app_data }}/traefik.yaml'
       template:
         src: traefik.yaml.j2
-        dest: "{{ app_data }}/traefik.yaml"
+        dest: "{{ directories_files }}/traefik.yaml"
       become: yes
       become_user: "{{ user }}"
 
