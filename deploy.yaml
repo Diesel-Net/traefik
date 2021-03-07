@@ -37,15 +37,8 @@
       become: yes
       become_user: "{{ user }}"
 
-    - name: Render docker-compose.yaml file
-      template:
-        src: "docker-compose.yaml.j2"
-        dest: "{{ app_data }}/docker-compose.yaml"
-
-    - name: Execute `Docker stack deploy`
-      shell: >
-        docker stack deploy 
-        --with-registry-auth 
-        --prune 
-        -c {{ app_data }}/docker-compose.yaml 
-        {{ docker_stack }}
+    - name: Render docker-compose.yaml & deploy stack
+      import_role:
+        name: docker-deploy
+      vars:
+        with_registry: no
