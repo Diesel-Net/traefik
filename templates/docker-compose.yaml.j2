@@ -10,7 +10,7 @@ services:
       - /etc/localtime:/etc/localtime
       - /var/run/docker.sock:/var/run/docker.sock
       - /etc/ssl/certs/:/etc/ssl/certs/
-      - '{{ app_data }}/traefik.yaml:/etc/traefik/dynamic/traefik.yaml:ro'
+      - '{{ directories_files }}/traefik.yaml:/etc/traefik/dynamic/traefik.yaml:ro'
     ports:
       - 80:80
       - 443:443
