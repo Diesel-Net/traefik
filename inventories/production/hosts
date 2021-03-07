@@ -6,9 +6,9 @@ all:
     tools:
       hosts:
         tools.diesel.net
-    valheim:
+    game:
       hosts:
-        valheim.diesel.net
+        game.diesel.net
 
   vars:
     ansible_user: automation
