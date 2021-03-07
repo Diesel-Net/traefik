@@ -5,17 +5,13 @@
 
   tasks:
 
-    - name: 'Ensure existence of configuration directory: {{ app_data }}/certs'
-      command: mkdir -p {{ app_data }}/certs
-      args:
-        warn: no
-      become: yes
-      become_user: "{{ user }}"
+    - name: 'Ensure existence of configuration directory: {{ directories_files }}/certs'
+      command: mkdir -p {{ directories_files }}/certs
 
     - name: Render public certificates
       ansible.builtin.copy:
         content: '{{ item.cert }}'
-        dest: '{{ app_data }}/certs/{{ item.common_name }}.cert'
+        dest: '{{ directories_files }}/certs/{{ item.common_name }}.cert'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.cert"
@@ -24,28 +20,19 @@
     - name: Render private keys
       ansible.builtin.copy:
         content: '{{ item.key }}'
-        dest: '{{ app_data }}/certs/{{ item.common_name }}.key'
+        dest: '{{ directories_files }}/certs/{{ item.common_name }}.key'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.key"
       when: certs is defined
 
-    - name: 'Render dynamic configuration to {{ app_data }}/traefik.yaml'
+    - name: 'Render dynamic configuration to {{ directories_files }}/traefik.yaml'
       template:
         src: traefik.yaml.j2
-        dest: "{{ app_data }}/traefik.yaml"
-      become: yes
-      become_user: "{{ user }}"
+        dest: "{{ directories_files }}/traefik.yaml"
 
-    - name: Render docker-compose.yaml file
-      template:
-        src: "docker-compose.yaml.j2"
-        dest: "{{ app_data }}/docker-compose.yaml"
-
-    - name: Execute `Docker stack deploy`
-      shell: >
-        docker stack deploy 
-        --with-registry-auth 
-        --prune 
-        -c {{ app_data }}/docker-compose.yaml 
-        {{ docker_stack }}
+    - name: Render docker-compose.yaml & deploy stack
+      import_role:
+        name: docker-deploy
+      vars:
+        with_registry: no
