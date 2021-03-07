@@ -26,12 +26,10 @@
         label: "{{ item.common_name }}.key"
       when: certs is defined
 
-    - name: 'Render dynamic configuration to {{ app_data }}/traefik.yaml'
+    - name: 'Render dynamic configuration to {{ directories_files }}/traefik.yaml'
       template:
         src: traefik.yaml.j2
         dest: "{{ directories_files }}/traefik.yaml"
-      become: yes
-      become_user: "{{ user }}"
 
     - name: Render docker-compose.yaml & deploy stack
       import_role:
