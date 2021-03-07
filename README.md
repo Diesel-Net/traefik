@@ -13,5 +13,5 @@ ansible-galaxy install -r roles/requirements.yaml -p ./roles --force
 
 ## Deploy to Docker Swarm
 ```bash
-ansible-playbook deploy.yaml -i inventories/dev/hosts --vault-id ~/.tokens/master_id
+ansible-playbook deploy.yaml -i inventories/development/hosts --vault-id ~/.tokens/master_id
 ```
