@@ -32,7 +32,7 @@
         dest: "{{ directories_files }}/traefik.yaml"
 
     - import_role:
-        name: docker-deploy
+        name: docker_deploy
 
     - name: Allow port 80 (HTTP)
       ufw:
