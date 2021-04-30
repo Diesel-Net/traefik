@@ -106,7 +106,7 @@ services:
         - traefik.http.routers.hello.middlewares=hello@docker
     networks:
       - {{ docker_network }}
-{% if env != 'prod' %}
+{% endif %}
 
 networks:
   {{ docker_network }}:
