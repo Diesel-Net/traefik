@@ -93,6 +93,7 @@ services:
     networks:
       - {{ docker_network }}
 
+{% if env != 'prod' %}
   hello:
     image: nginxdemos/hello
     deploy:
@@ -105,6 +106,7 @@ services:
         - traefik.http.routers.hello.middlewares=hello@docker
     networks:
       - {{ docker_network }}
+{% endif %}
 
 networks:
   {{ docker_network }}:
