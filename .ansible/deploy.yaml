@@ -1,4 +1,4 @@
-# ansible-playbook deploy.yaml -i inventories/dev/hosts --vault-id ~/.tokens/master_id
+# ansible-playbook .ansible/deploy.yaml -i .ansible/inventory/development/hosts --vault-id ~/.tokens/master_id
 
 - hosts: all
   strategy: free
@@ -31,8 +31,25 @@
         src: traefik.yaml.j2
         dest: "{{ directories_files }}/traefik.yaml"
 
-    - name: Render docker-compose.yaml & deploy stack
-      import_role:
-        name: docker-deploy
-      vars:
-        with_registry: no
+    - import_role:
+        name: docker_deploy
+
+    - name: Allow port 80 (HTTP)
+      ufw:
+        rule: allow
+        port: '80'
+        proto: any
+      become: yes
+
+    - name: Allow port 443 (HTTPS)
+      ufw:
+        rule: allow
+        port: '443'
+        proto: any
+      become: yes
+
+    - name: Reload Firewall and enable at boot
+      ufw:
+        state: enabled
+        policy: deny
+      become: yes
