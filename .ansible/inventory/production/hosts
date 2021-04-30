@@ -2,7 +2,7 @@ all:
   children:
     leader:
       hosts:
-        diesel.net
+        prod.diesel.net
     tools:
       hosts:
         tools.diesel.net
