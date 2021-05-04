@@ -8,9 +8,11 @@ services:
     image: traefik:v2.4
     volumes:
       - /etc/localtime:/etc/localtime
-      - /var/run/docker.sock:/var/run/docker.sock
       - /etc/ssl/certs/:/etc/ssl/certs/
-      - '{{ directories_files }}/traefik.yaml:/etc/traefik/dynamic/traefik.yaml:ro'
+      - /var/run/docker.sock:/var/run/docker.sock
+      - '{{ directories_files }}/certs:/etc/traefik/certs/'
+      - '{{ directories_files }}/acme:/etc/traefik/acme/'
+      - '{{ directories_files }}/dynamic:/etc/traefik/dynamic/'
     ports:
       - 80:80
       - 443:443
@@ -51,14 +53,14 @@ services:
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge=true'
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge.entrypoint=web'
       - '--certificatesresolvers.lets-encrypt.acme.email={{ acme_email }}'
-      - '--certificatesresolvers.lets-encrypt.acme.storage=acme.json'
+      - '--certificatesresolvers.lets-encrypt.acme.storage=/etc/traefik/acme/lets-encrypt.json'
       - '--certificatesresolvers.lets-encrypt.acme.caServer={{ acme_url_external }}'
 
       # Private cert resolver (Step CA)
       - '--certificatesresolvers.step-ca.acme.httpchallenge=true'
       - '--certificatesresolvers.step-ca.acme.httpchallenge.entrypoint=web'
       - '--certificatesresolvers.step-ca.acme.email={{ acme_email }}'
-      - '--certificatesresolvers.step-ca.acme.storage=acme.json'
+      - '--certificatesresolvers.step-ca.acme.storage=/etc/traefik/acme/step-ca.json'
       - '--certificatesresolvers.step-ca.acme.caServer={{ acme_url_internal }}'
       
 
