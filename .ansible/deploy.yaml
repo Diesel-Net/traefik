@@ -2,43 +2,56 @@
 
 - hosts: all
   strategy: free
+  roles: 
+    - common
 
   tasks:
 
-    - name: 'Ensure existence of configuration directory: {{ directories_files }}/dynamic'
-      command: mkdir -p {{ directories_files }}/dynamic
+    - include_role:
+        name: common
+        tasks_from: make_config_dir
 
-    - name: 'Ensure existence of configuration directory: {{ directories_files }}/acme'
-      command: mkdir -p {{ directories_files }}/acme
+    - include_role:
+        name: common
+        tasks_from: make_data_dir
 
-    - name: 'Ensure existence of configuration directory: {{ directories_files }}/certs'
-      command: mkdir -p {{ directories_files }}/certs
+    - name: Ensure directories exists
+      file: 
+        path: '{{ directory }}'
+        state: directory
+      loop_control:
+        loop_var: directory
+      loop:
+        - '{{ config_dir }}/dynamic'
+        - '{{ config_dir }}/certs'
+        - '{{ data_dir }}/acme'
 
     - name: Render public certificates
-      ansible.builtin.copy:
+      copy:
         content: '{{ item.crt }}'
-        dest: '{{ directories_files }}/certs/{{ item.common_name }}.crt'
+        dest: '{{ config_dir }}/certs/{{ item.common_name }}.crt'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.crt"
       when: certs is defined
 
     - name: Render private keys
-      ansible.builtin.copy:
+      copy:
         content: '{{ item.key }}'
-        dest: '{{ directories_files }}/certs/{{ item.common_name }}.key'
+        dest: '{{ config_dir }}/certs/{{ item.common_name }}.key'
       with_items: '{{ certs }}'
       loop_control:
         label: "{{ item.common_name }}.key"
       when: certs is defined
 
-    - name: 'Render dynamic configuration to {{ directories_files }}/dynamic/traefik.yaml'
+    - name: 'Render dynamic configuration to {{ config_dir }}/dynamic/traefik.yaml'
       template:
         src: traefik.yaml.j2
-        dest: "{{ directories_files }}/dynamic/traefik.yaml"
+        dest: "{{ config_dir }}/dynamic/traefik.yaml"
 
-    - import_role:
-        name: docker_deploy
+    - include_role:
+        name: docker
+        tasks_from: stack_deploy
 
     - name: Allow port 80 (HTTP)
       ufw:
