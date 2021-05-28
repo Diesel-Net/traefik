@@ -1,18 +1,18 @@
 # docker-compose.yaml
 
-version: '3.7'
+version: '3.8'
 services: 
 
 
-  main:
+  proxy:
     image: traefik:v2.4
     volumes:
       - /etc/localtime:/etc/localtime
       - /etc/ssl/certs/:/etc/ssl/certs/
       - /var/run/docker.sock:/var/run/docker.sock
-      - '{{ directories_files }}/certs:/etc/traefik/certs/'
-      - '{{ directories_files }}/acme:/etc/traefik/acme/'
-      - '{{ directories_files }}/dynamic:/etc/traefik/dynamic/'
+      - {{ config_dir }}/certs/:/etc/traefik/certs/
+      - {{ data_dir }}/acme/:/etc/traefik/acme/
+      - {{ config_dir }}/dynamic/:/etc/traefik/dynamic/
     ports:
       - 80:80
       - 443:443
@@ -96,16 +96,16 @@ services:
       - {{ docker_network }}
 
 {% if env != 'prod' %}
-  hello:
+  demo:
     image: nginxdemos/hello
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.services.hello.loadbalancer.server.port=80
-        - traefik.http.routers.hello.tls.certresolver=step-ca
-        - traefik.http.routers.hello.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/hello`)
-        - traefik.http.middlewares.hello.stripprefix.prefixes=/hello
-        - traefik.http.routers.hello.middlewares=hello@docker
+        - traefik.http.services.demo.loadbalancer.server.port=80
+        - traefik.http.routers.demo.tls.certresolver=step-ca
+        - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`)
+        - traefik.http.middlewares.demo.stripprefix.prefixes=/demo
+        - traefik.http.routers.demo.middlewares=demo@docker
     networks:
       - {{ docker_network }}
 {% endif %}
