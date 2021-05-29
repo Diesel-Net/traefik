@@ -1,4 +1,4 @@
-[![Build Status](https://drone-ci.hopto.org/api/badges/Diesel-Net/traefik/status.svg)](https://drone-ci.hopto.org/Diesel-Net/traefik)
+[![Build Status](https://drone.kiwi-labs.net/api/badges/Diesel-Net/traefik/status.svg)](https://drone.kiwi-labs.net/Diesel-Net/traefik)
 
 # traefik
 Sets up [Traefik v2.4](https://doc.traefik.io/traefik) for each environment on our clusters.
