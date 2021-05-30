@@ -118,7 +118,8 @@ services:
         - traefik.http.services.fallback.loadbalancer.server.port=80
         - traefik.http.routers.fallback.tls.certresolver=step-ca
         #- traefik.http.routers.fallback.rule=HostRegexp(`{host:.+}`)
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`)
+        # we would need to do ACME DNS challenge for wildcard certificate to make above work with TLS
+        - traefik.http.routers.fallback.rule=Host(`{{ domains | join('`,`') }}`)
         - traefik.http.routers.fallback.priority=1
     networks:
     - {{ docker_network }}
