@@ -120,8 +120,8 @@ services:
         - traefik.http.routers.fallback.rule=HostRegexp(.*)
         #- traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`)
         - traefik.http.routers.fallback.priority=1
-       networks:
-        - {{ docker_network }}
+    networks:
+    - {{ docker_network }}
 
 networks:
   {{ docker_network }}:
