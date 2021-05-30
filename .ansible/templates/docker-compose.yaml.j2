@@ -116,8 +116,8 @@ services:
       labels:
         - traefik.enable=true
         - traefik.http.services.fallback.loadbalancer.server.port=80
-        - traefik.http.routers.fallback.tls.certresolver=step-ca
-        - traefik.http.routers.fallback.rule=HostRegexp(.*)
+        #- traefik.http.routers.fallback.tls.certresolver=step-ca
+        - traefik.http.routers.fallback.rule=HostRegexp(`{host:.+}`)
         #- traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`)
         - traefik.http.routers.fallback.priority=1
     networks:
