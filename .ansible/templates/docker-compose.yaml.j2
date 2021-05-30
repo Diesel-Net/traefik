@@ -103,12 +103,21 @@ services:
         - traefik.enable=true
         - traefik.http.services.demo.loadbalancer.server.port=80
         - traefik.http.routers.demo.tls.certresolver=step-ca
-        - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`)
+        - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`) 
         - traefik.http.middlewares.demo.stripprefix.prefixes=/demo
         - traefik.http.routers.demo.middlewares=demo@docker
     networks:
       - {{ docker_network }}
 {% endif %}
+
+  fallback:
+    image: adrianrudnik/maintenance-server:1.1.0
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.fallback.loadbalancer.server.port=80
+        - traefik.http.routers.demo.tls.certresolver=step-ca
+        - traefik.http.routers.demo.rule=HostRegexp({catchall:.*})
 
 networks:
   {{ docker_network }}:
