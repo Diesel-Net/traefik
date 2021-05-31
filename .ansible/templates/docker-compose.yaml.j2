@@ -110,25 +110,6 @@ services:
       - {{ docker_network }}
 {% endif %}
 
-  fallback:
-    image: adrianrudnik/maintenance-server:1.1.0
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.services.fallback.loadbalancer.server.port=80
-{% if env == 'prod' %}
-        - traefik.http.routers.fallback.tls.certresolver=lets-encrypt
-{% endif %}
-{% if env != 'prod' %}
-        - traefik.http.routers.fallback.tls.certresolver=step-ca
-{% endif %}
-        #- traefik.http.routers.fallback.rule=HostRegexp(`{host:.+}`)
-        # we would need to do ACME DNS challenge for wildcard certificate to make above work with TLS
-        - traefik.http.routers.fallback.rule=Host(`{{ domains | join('`,`') }}`)
-        - traefik.http.routers.fallback.priority=1
-    networks:
-    - {{ docker_network }}
-
 networks:
   {{ docker_network }}:
     external:
