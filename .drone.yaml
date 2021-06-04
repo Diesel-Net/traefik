@@ -10,7 +10,7 @@ steps:
   - name: deploy
     image: plugins/ansible:3
     settings:
-      requirements: .ansible/files/ansibe.requirements.txt
+      requirements: .ansible/files/ansible.requirements.txt
       playbook: .ansible/deploy.yaml
       galaxy: .ansible/roles/requirements.yaml
       inventory: .ansible/inventory/development/hosts
@@ -37,7 +37,7 @@ steps:
   - name: deploy
     image: plugins/ansible:3
     settings:
-      requirements: .ansible/files/ansibe.requirements.txt
+      requirements: .ansible/files/ansible.requirements.txt
       playbook: .ansible/deploy.yaml
       galaxy: .ansible/roles/requirements.yaml
       inventory: .ansible/inventory/stable/hosts
@@ -64,7 +64,7 @@ steps:
   - name: deploy
     image: plugins/ansible:3
     settings:
-      requirements: .ansible/files/ansibe.requirements.txt
+      requirements: .ansible/files/ansible.requirements.txt
       playbook: .ansible/deploy.yaml
       galaxy: .ansible/roles/requirements.yaml
       inventory: .ansible/inventory/production/hosts
