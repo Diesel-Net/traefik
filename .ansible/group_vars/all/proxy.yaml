@@ -1,0 +1,3 @@
+# Add IP address (CIDR notation) for any proxies along the way (enables proxy chaining)
+trusted_ips:
+  - 192.168.50.1/24 # internal CIDR

@@ -1,5 +1,7 @@
 # docker-compose.yaml
 
+
+
 version: '3.8'
 services: 
 
@@ -8,7 +10,7 @@ services:
     image: traefik:v2.4
     volumes:
       - /etc/localtime:/etc/localtime
-      - /etc/ssl/certs/:/etc/ssl/certs/
+      - {{ ssl_cert_dir }}/:/etc/ssl/certs/
       - /var/run/docker.sock:/var/run/docker.sock
       - {{ config_dir }}/certs/:/etc/traefik/certs/
       - {{ data_dir }}/acme/:/etc/traefik/acme/
@@ -48,6 +50,11 @@ services:
       # Global HTTP -> HTTPS redirect
       - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
       - '--entrypoints.web.http.redirections.entryPoint.scheme=https'
+
+      # Trust X-Forwarded-* Headers from specific IPs
+      # https://community.traefik.io/t/how-to-properly-use-x-forwarded-for-in-v2/3834
+      - '--entrypoints.web.forwardedHeaders.trustedIPs={{ trusted_ips | join(",") }}'
+      - '--entrypoints.websecure.forwardedHeaders.trustedIPs={{ trusted_ips | join(",") }}'
 
       # Public cert resolver (Let's Encrypt)
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge=true'
