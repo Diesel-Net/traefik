@@ -1,4 +1,6 @@
+external_domain: kiwi-labs.net
+
 # Add IP address (CIDR notation) for any proxies along the way (enables proxy chaining)
 trusted_ips:
   - 192.168.50.1/24 # internal CIDR
-  - '{{ lookup("dig", "kiwi-labs.net") }}'
+  - '{{ lookup("dig", external_domain) }}' # WAN IP
