@@ -1,5 +1,7 @@
 # docker-compose.yaml
 
+
+
 version: '3.8'
 services: 
 
@@ -8,7 +10,7 @@ services:
     image: traefik:v2.4
     volumes:
       - /etc/localtime:/etc/localtime
-      - /etc/ssl/certs/:/etc/ssl/certs/
+      - {{ ssl_cert_dir }}/:/etc/ssl/certs/
       - /var/run/docker.sock:/var/run/docker.sock
       - {{ config_dir }}/certs/:/etc/traefik/certs/
       - {{ data_dir }}/acme/:/etc/traefik/acme/
@@ -39,15 +41,20 @@ services:
       - '--providers.file.watch=true'
       
       # Configure entrypoints
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
+      - '--entryPoints.web.address=:80'
+      - '--entryPoints.websecure.address=:443'
 
       # needed to enable TLS, unless a cert-resolver (ACME) is used
-      - '--entrypoints.websecure.http.tls=true'
+      - '--entryPoints.websecure.http.tls=true'
 
       # Global HTTP -> HTTPS redirect
-      - '--entrypoints.web.http.redirections.entryPoint.to=websecure'
-      - '--entrypoints.web.http.redirections.entryPoint.scheme=https'
+      - '--entryPoints.web.http.redirections.entryPoint.to=websecure'
+      - '--entryPoints.web.http.redirections.entryPoint.scheme=https'
+
+      # Trust X-Forwarded-* Headers from specific IPs
+      # https://community.traefik.io/t/how-to-properly-use-x-forwarded-for-in-v2/3834
+      - '--entryPoints.web.forwardedHeaders.trustedIPs={{ trusted_ips | join(",") }}'
+      - '--entryPoints.websecure.forwardedHeaders.trustedIPs={{ trusted_ips | join(",") }}'
 
       # Public cert resolver (Let's Encrypt)
       - '--certificatesresolvers.lets-encrypt.acme.httpchallenge=true'
@@ -109,25 +116,6 @@ services:
     networks:
       - {{ docker_network }}
 {% endif %}
-
-  fallback:
-    image: adrianrudnik/maintenance-server:1.1.0
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.http.services.fallback.loadbalancer.server.port=80
-{% if env == 'prod' %}
-        - traefik.http.routers.fallback.tls.certresolver=lets-encrypt
-{% endif %}
-{% if env != 'prod' %}
-        - traefik.http.routers.fallback.tls.certresolver=step-ca
-{% endif %}
-        #- traefik.http.routers.fallback.rule=HostRegexp(`{host:.+}`)
-        # we would need to do ACME DNS challenge for wildcard certificate to make above work with TLS
-        - traefik.http.routers.fallback.rule=Host(`{{ domains | join('`,`') }}`)
-        - traefik.http.routers.fallback.priority=1
-    networks:
-    - {{ docker_network }}
 
 networks:
   {{ docker_network }}:
