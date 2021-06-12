@@ -1,11 +1,18 @@
 all:
   children:
-    leader:
+    
+    manager:
       hosts:
         prod.diesel.net
+
+    drone:
+      hosts:
+        drone.diesel.net
+
     tools:
       hosts:
         tools.diesel.net
+
     games:
       hosts:
         games.diesel.net
