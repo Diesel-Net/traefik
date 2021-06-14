@@ -98,12 +98,12 @@ services:
     networks:
       - {{ docker_network }}
 
-{% if env != 'prod' %}
+{% if env == 'dev' %}
   demo:
     image: nginxdemos/hello
     deploy:
       labels:
-        - traefik.enable={{ (env != 'prod') | string | lower }}
+        - traefik.enable=true
         - traefik.http.services.demo.loadbalancer.server.port=80
         - traefik.http.routers.demo.tls.certresolver=step-ca
         - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`) 
