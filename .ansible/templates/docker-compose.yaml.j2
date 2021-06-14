@@ -74,7 +74,7 @@ services:
       restart_policy:
         condition: any
       labels:
-        - traefik.enable=true
+        - traefik.enable={{ (env != 'prod') | string | lower }}
 
         # required in swarm
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
@@ -98,12 +98,11 @@ services:
     networks:
       - {{ docker_network }}
 
-{% if env != 'prod' %}
   demo:
     image: nginxdemos/hello
     deploy:
       labels:
-        - traefik.enable=true
+        - traefik.enable={{ (env != 'prod') | string | lower }}
         - traefik.http.services.demo.loadbalancer.server.port=80
         - traefik.http.routers.demo.tls.certresolver=step-ca
         - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`) 
@@ -111,7 +110,6 @@ services:
         - traefik.http.routers.demo.middlewares=demo@docker
     networks:
       - {{ docker_network }}
-{% endif %}
 
 networks:
   {{ docker_network }}:
