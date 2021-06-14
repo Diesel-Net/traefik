@@ -74,7 +74,7 @@ services:
       restart_policy:
         condition: any
       labels:
-        - traefik.enable=true
+        - traefik.enable={{ (env != 'prod') | string | lower }}
 
         # required in swarm
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
@@ -98,7 +98,7 @@ services:
     networks:
       - {{ docker_network }}
 
-{% if env != 'prod' %}
+{% if env == 'dev' %}
   demo:
     image: nginxdemos/hello
     deploy:
