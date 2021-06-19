@@ -83,20 +83,24 @@ services:
         - traefik.http.routers.dashboard.tls.certresolver=step-ca
         
         # router rules must be defined within a single docker label
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`)
+        - traefik.http.routers.dashboard.rule=Host(`{{ domain }}`)
         
         # basic-auth middleware
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
 
-        - traefik.http.middlewares.dashboard-addprefix.prefix=dashboard
+        - traefik.http.middlewares.dashboard-prefix.addprefix.prefix=/dashboard/
+
+        # redirect to /dashboard/
+        #- traefik.http.middlewares.external-redirect.redirectregex.regex=^https://{{ domain }}/(.*)
+        #- traefik.http.middlewares.external-redirect.redirectregex.replacement=https://{{ domain }}/dashboard/
         
         # trailing slash middleware
-        - traefik.http.middlewares.dashboard-add-slash.redirectregex.regex=(^.*\/dashboard$$)
-        - traefik.http.middlewares.dashboard-add-slash.redirectregex.replacement=$$1/
-        - traefik.http.middlewares.dashboard-add-slash.redirectregex.permanent=false
+        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.regex=(^.*\/dashboard$$)
+        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.replacement=$$1/
+        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.permanent=false
 
         # assign middlewares (order matters)
-        - traefik.http.routers.dashboard.middlewares=dashboard-add-slash@docker, dashboard-auth@docker
+        - traefik.http.routers.dashboard.middlewares=dashboard-prefix@docker, dashboard-auth@docker
     networks:
       - {{ docker_network }}
 
@@ -108,7 +112,7 @@ services:
         - traefik.enable=true
         - traefik.http.services.demo.loadbalancer.server.port=80
         - traefik.http.routers.demo.tls.certresolver=step-ca
-        - traefik.http.routers.demo.rule=Host(`{{ domains | join('`,`') }}`) && PathPrefix(`/demo`) 
+        - traefik.http.routers.demo.rule=Host(`{{ domain }}`) && PathPrefix(`/demo`)
         - traefik.http.middlewares.demo.stripprefix.prefixes=/demo
         - traefik.http.routers.demo.middlewares=demo@docker
     networks:
