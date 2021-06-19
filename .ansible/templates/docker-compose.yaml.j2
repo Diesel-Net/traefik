@@ -74,7 +74,7 @@ services:
       restart_policy:
         condition: any
       labels:
-        - traefik.enable={{ (env != 'prod') | string | lower }}
+        - traefik.enable=true
 
         # required in swarm
         - traefik.http.services.api@internal.loadbalancer.server.port=8080
