@@ -91,7 +91,7 @@ services:
         #- traefik.http.middlewares.dashboard-prefix.addprefix.prefix=/dashboard
 
         # redirect to /dashboard/
-        - traefik.http.middlewares.dashboard-redirect.redirectregex.regex=^https://{{ domain }}$
+        - traefik.http.middlewares.dashboard-redirect.redirectregex.regex=^https://{{ domain }}$$
         - traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=https://{{ domain }}/dashboard/
         - traefik.http.middlewares.dashboard-redirect.redirectregex.permanent=false
         
