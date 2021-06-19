@@ -83,10 +83,12 @@ services:
         - traefik.http.routers.dashboard.tls.certresolver=step-ca
         
         # router rules must be defined within a single docker label
-        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+        - traefik.http.routers.dashboard.rule=Host(`{{ domains | join('`,`') }}`)
         
         # basic-auth middleware
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
+
+        - traefik.http.middlewares.dashboard-addprefix.prefix=dashboard
         
         # trailing slash middleware
         - traefik.http.middlewares.dashboard-add-slash.redirectregex.regex=(^.*\/dashboard$$)
