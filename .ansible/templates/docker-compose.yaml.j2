@@ -88,17 +88,10 @@ services:
         # basic-auth middleware
         - traefik.http.middlewares.dashboard-auth.basicauth.users={{ htpasswd }}
 
-        #- traefik.http.middlewares.dashboard-prefix.addprefix.prefix=/dashboard
-
         # redirect to /dashboard/
         - traefik.http.middlewares.dashboard-redirect.redirectregex.regex=^https://{{ domain | replace('.', '\.') }}$$
         - traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=https://{{ domain }}/dashboard/
         - traefik.http.middlewares.dashboard-redirect.redirectregex.permanent=false
-        
-        # trailing slash middleware
-        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.regex=(^.*\/dashboard$$)
-        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.replacement=$$1/
-        #- traefik.http.middlewares.dashboard-add-slash.redirectregex.permanent=false
 
         # assign middlewares (order matters)
         - traefik.http.routers.dashboard.middlewares=dashboard-auth@docker, dashboard-redirect@docker
