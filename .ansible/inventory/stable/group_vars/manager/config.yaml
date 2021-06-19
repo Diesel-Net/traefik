@@ -1,2 +1,1 @@
-domains: 
-  - traefik.test.diesel.net
+domain: traefik.test.diesel.net
