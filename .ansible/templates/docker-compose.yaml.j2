@@ -39,8 +39,6 @@ services:
       # Configure entrypoints
       - '--entryPoints.web.address=:80'
       - '--entryPoints.websecure.address=:443'
-      - '--entryPoints.ldap.address=:389'
-      - '--entryPoints.ldaps.address=:636'
 
       # needed to enable TLS, unless a cert-resolver (ACME) is used
       - '--entryPoints.websecure.http.tls=true'
