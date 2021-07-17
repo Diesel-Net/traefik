@@ -51,6 +51,9 @@ services:
       - '--entryPoints.web.http.redirections.entryPoint.to=websecure'
       - '--entryPoints.web.http.redirections.entryPoint.scheme=https'
 
+      # disable backend server ssl verification
+      - '--serversTransport.insecureSkipVerify=true'
+
       # Trust X-Forwarded-* Headers from specific IPs
       # https://community.traefik.io/t/how-to-properly-use-x-forwarded-for-in-v2/3834
       - '--entryPoints.web.forwardedHeaders.trustedIPs={{ trusted_ips | join(",") }}'
