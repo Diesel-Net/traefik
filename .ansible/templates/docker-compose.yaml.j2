@@ -3,7 +3,7 @@ services:
 
 
   proxy:
-    image: traefik:v2.5
+    image: traefik:v2.4.11
     volumes:
       - /etc/localtime:/etc/localtime
       - {{ ssl_cert_dir }}/:/etc/ssl/certs/
