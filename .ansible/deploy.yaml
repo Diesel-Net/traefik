@@ -67,13 +67,6 @@
         proto: any
       become: yes
 
-    - name: Allow port 389 (LDAP)
-      ufw:
-        rule: allow
-        port: '389'
-        proto: any
-      become: yes
-
     - name: Reload Firewall and enable at boot
       ufw:
         state: enabled

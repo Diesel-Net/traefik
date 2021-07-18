@@ -13,9 +13,7 @@ services:
       - {{ config_dir }}/dynamic/:/etc/traefik/dynamic/
     ports:
       - 80:80
-      - 389:389
       - 443:443
-      - 636:636
     command:
       # Logging
       - '--log.level=DEBUG'
